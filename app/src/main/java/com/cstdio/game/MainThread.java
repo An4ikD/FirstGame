@@ -6,7 +6,7 @@ import android.view.SurfaceHolder;
 
 public class MainThread extends Thread {
     private Singleton singleton = Singleton.getMyInstance();;
-    private int FPS = 30;
+    private int FPS = 10;
     private double averageFPS;
     private SurfaceHolder surfaceHolder;
     private GamePanel gamePanel;

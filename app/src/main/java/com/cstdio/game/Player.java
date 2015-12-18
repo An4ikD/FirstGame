@@ -22,6 +22,8 @@ public class Player extends GameObject implements SensorEventListener {
     private int currentAction; // 0 - idle, 1 - run, 2 - jump
     private int direction = 1;
     private int jumpDirection;
+    private int posx, posy;
+    private boolean last  = false;
 
     private Sensor accel;
     private SensorManager sensorManager;
@@ -77,15 +79,16 @@ public class Player extends GameObject implements SensorEventListener {
         this.resources = resources;
         currentAction = 1;
         // initial position of a player
+        posx = posy = 0;
         x = 100;
-        y = 300;
+        y = 500;
         dy = 0;
         score = 0;
 
-        height = singleton.getScreenHeight() / 15;
-        width = singleton.getScreenWidth() / 15;
+        height = singleton.getScreenHeight() / 8;
+        width = singleton.getScreenWidth() / 8;
 
-        System.out.println(singleton.getScreenHeight() + " " + singleton.getScreenWidth());
+        singleton.setPlayerSize(width, height);
 
         initBitmaps();
         initAnimations();
@@ -123,23 +126,60 @@ public class Player extends GameObject implements SensorEventListener {
 
             dy = (int)dya;
 
-            if(dy > 0)
+            if(dya >= 0)
                 jumpDirection = 1;
-            y += dy * 2;
+            // y += dy * 2;
+            posy += dy * 2;
+
             dy = 0;
-            dya += 1.0;
-            if(dya > 10.0)
+            if(dya < 10.0)
+                dya += 1.0;
+
+            if(last) {
                 setAction(0);
+                last = false;
+            }
         }
+
         dx = (int) dxa;
-        x += dx * 2;
+
+        if(x + dx * 2 >= 100 && x + dx * 2 <= singleton.getScreenWidth() / 2 - 100) {
+            x += dx * 2;
+        }
+        else {
+            posx += dx * 2;
+        }
         dx = 0;
 
         myAnimations[currentAction].update();
     }
 
+    public int getPosx() {
+        return posx;
+    }
+
+    public int getPosy() {
+        return posy;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
     public void draw(Canvas canvas) {
         canvas.drawBitmap(myAnimations[currentAction].getImage(direction), x, y, null);
+    }
+
+    public int getPlayerWidth() {
+        return width;
     }
 
     public int getScore() {
@@ -156,6 +196,18 @@ public class Player extends GameObject implements SensorEventListener {
 
     public void resetDYA() {
         dya = 0;
+    }
+
+    public double getDYA() {
+        return dya;
+    }
+
+    public void setDYA(double dya) {
+        this.dya = dya / 2.0;
+    }
+
+    public void setLast(boolean b) {
+        last = b;
     }
 
     public void resetScore() {
